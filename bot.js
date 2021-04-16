@@ -367,7 +367,89 @@ sweep <txid:vout>
   if (message[0].toLocaleLowerCase() === 'withdraw') {
     console.log('withdraw', message)
 
-    ctx.reply('withdraw not yet implemented')
+    var user = from
+    var amount = message[1]
+    if (!amount || amount > ledger[user]) {
+      ctx.reply('not enough funds')
+      return
+    } 
+
+    var destination = message[2]
+    if (!destination) {
+      ctx.reply('need a destination')
+      return
+    }
+
+    function getAllPegs() {
+      return credits.filter(e => e.source.match(/^[0-9a-f]{64}:[0-9]+$/) )
+    }
+
+    var allPegs = getAllPegs()
+    console.log('allpegs', allPegs)
+
+    var utxo = []
+    var missing = []
+    allPegs.forEach(e => {
+      const gitmarkTxBase = homedir + '/.gitmark/tx'
+
+      const txFile = gitmarkTxBase + '/' + e.source.split(':')[0] + '.json'
+
+      try {
+        var tx = require(txFile)
+      } catch {
+        console.log('missing', e.source.split(':')[0])
+        missing.push(e.source.split(':')[0])
+      }
+
+      var output = tx.outputs[e.source.split(':')[1]]
+      console.log(output)
+      console.log(tx)
+      var obj = { amount: output.amount * 1000, addr: output.addr, txin: e.source }
+      utxo.push(obj)
+      
+    })
+    
+    console.log('utxo', utxo)
+
+    var user = from
+    var hash = computeSHA256(user)
+    var privkey = getPrivKey(data.file)
+
+    // priv keys
+    const b1 = BigInt('0x' + privkey)
+    const b2 = BigInt('0x' + hash)
+    const b3 = BigInt.asUintN(256, b1 + b2)
+
+    var keyPair3 = bitcoin.ECPair.fromPrivateKey(
+      Buffer.from(b3.toString(16).padStart(64, 0), 'hex')
+    )
+
+    // address from priv key addition
+    var { address } = bitcoin.payments.p2pkh({
+      pubkey: keyPair3.publicKey,
+      network: BITMARK
+    })
+
+    var mine = utxo.filter(e => e.addr === address)
+    mine= mine.sort((a, b) => b - a)
+    console.log('mine', mine)
+    var biggest = mine[0]
+    console.log('biggest', biggest)
+
+
+    if (missing.length > 0) {
+      console.log('missing', missing)
+      ctx.reply('missing tx ' + missing)
+      return
+    }
+
+    if (amount > biggest.amount) {
+      console.log('amount too high max', biggest.amount)
+      ctx.reply('witdhrawal amount too high max is ' + biggest.amount)
+      return
+    }
+
+    ctx.reply(`withdrawal request from ${biggest.txin} ${amount} of ${biggest.amount} to ${message[2]}`)
   }
 
   // help
@@ -378,7 +460,9 @@ sweep <txid:vout>
 
 balance [user] - get balance
 balances - all balances
-mark @user amount [comment] - mark user`)
+deposit - get your deposit adddress
+mark @user amount [comment] - mark user
+sweep - sweep a desposit into the ledger`)
   }
 
 
