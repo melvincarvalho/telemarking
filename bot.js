@@ -4,11 +4,11 @@
 
 // requires
 const fs = require('fs')
-var bitcoin = require('bitcoinjs-lib')
+const bitcoin = require('bitcoinjs-lib')
 const { Telegraf } = require('telegraf')
-var argv = require('minimist')(process.argv.slice(2))
+const argv = require('minimist')(process.argv.slice(2))
 const homedir = require('os').homedir()
-var exec = require('child_process').exec
+const exec = require('child_process').exec
 
 
 const {createHash} = require('crypto');
