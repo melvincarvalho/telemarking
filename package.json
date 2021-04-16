@@ -1,6 +1,6 @@
 {
   "name": "telemarking",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -9,8 +9,12 @@
   "author": "Melvin Carvalho",
   "license": "MIT",
   "dependencies": {
+    "bitcoinjs-lib": "^5.2.0",
+    "child_process": "^1.0.2",
+    "crypo": "^0.1.4",
     "fs": "^0.0.1-security",
     "minimist": "^1.2.5",
+    "os": "^0.1.1",
     "telegraf": "^4.3.0"
   }
 }
