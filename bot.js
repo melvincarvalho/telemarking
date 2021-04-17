@@ -549,6 +549,7 @@ sweep <txid:vout>
         ctx.reply(`transaction submitted, please wait c. 2 minutes for one confirmation`);
         ctx.reply(`txid:\n${stdout}`);
 
+        ledger[user] -= newtx.amount
         var credit = { source: user, destination: `${stdout.replace('\n', '')}:0`, comment: `withdrawal ${w.txin}`, amount: newtx.amount, timestamp: Math.floor(Date.now() / 1000) }
         console.log(credit)
         if (credit) {
@@ -583,6 +584,7 @@ sweep <txid:vout>
         ctx.reply(`transaction submitted, please wait c. 2 minutes for one confirmation`);
         ctx.reply(`txid:\n${stdout}`);
 
+        ledger[user] -= newtx.amount
         var credit = { source: user, destination: `${stdout.replace('\n', '')}:0`, comment: `withdrawal ${newtx.txin}`, amount: newtx.amount, timestamp: Math.floor(Date.now() / 1000) }
         console.log(credit)
         if (credit) {
