@@ -381,7 +381,12 @@ sweep <txid:vout>
     }
 
     function getAllPegs() {
-      return credits.filter(e => e.source.match(/^[0-9a-f]{64}:[0-9]+$/) )
+      var deposits = credits.filter(e => {return e.source.match(/^[0-9a-f]{64}:[0-9]+$/) })
+
+      var withdrawals = credits.filter(e => {return e.destination.match(/^[0-9a-f]{64}:[0-9]+$/) })
+
+      return deposits.concat(withdrawals)
+
     }
 
     var allPegs = getAllPegs()
@@ -390,26 +395,50 @@ sweep <txid:vout>
     var utxo = []
     var missing = []
     allPegs.forEach(e => {
+
+      var type = 'deposit'
+      var out = e.source
+      var mult = 1
+      if (e.destination.match(/^[0-9a-f]{64}:[0-9]+$/)) {
+        type = 'withdrawal'
+        out = e.destination
+        mult = -1
+      }
+
       const gitmarkTxBase = homedir + '/.gitmark/tx'
 
-      const txFile = gitmarkTxBase + '/' + e.source.split(':')[0] + '.json'
+
+
+      const txFile = gitmarkTxBase + '/' + out.split(':')[0] + '.json'
 
       try {
         var tx = require(txFile)
       } catch {
-        console.log('missing', e.source.split(':')[0])
-        missing.push(e.source.split(':')[0])
+        console.log('missing', out.split(':')[0])
+        missing.push(out.split(':')[0])
       }
 
-      var output = tx.outputs[e.source.split(':')[1]]
+      var output = tx.outputs[out.split(':')[1]]
+      console.log('tx', tx)
+      console.log('received', tx.inputs.received_from)
       console.log(output)
-      console.log(tx)
-      var obj = { amount: output.amount * 1000, addr: output.addr, txin: e.source }
+      var obj = { txid: out, amount: output.amount * 1000, fee: tx.fees*1000, addr: output.addr, txin: out, comment: e.comment }
       utxo.push(obj)
       
     })
     
     console.log('utxo', utxo)
+    var withdrawals = utxo.filter(e => e.comment.match(/withrawal /) )
+    console.log('withdrawals', withdrawals)
+    withdrawals.forEach(i => {
+      console.log('processing withdrawals')
+      console.log(i.comment)
+      var f = utxo.findIndex(e => e.txid === i.comment.split(' ')[1])
+      console.log('f', f, utxo[f])
+      utxo[f].amount = utxo[f].amount - i.amount - i.fee
+    })
+    console.log('processed utxo', utxo)
+
 
     var user = from
     var hash = computeSHA256(user)
@@ -431,7 +460,7 @@ sweep <txid:vout>
     })
 
     var mine = utxo.filter(e => e.addr === address)
-    mine= mine.sort((a, b) => b - a)
+    mine= mine.sort((a, b) => b.amount - a.amount)
     console.log('mine', mine)
     var biggest = mine[0]
     console.log('biggest', biggest)
@@ -449,7 +478,44 @@ sweep <txid:vout>
       return
     }
 
-    ctx.reply(`withdrawal request from ${biggest.txin} ${amount} of ${biggest.amount} to ${message[2]}`)
+    var min = 100 
+    if (amount <  min) {
+      console.log('min amount is', min)
+      ctx.reply('with withdrawal ' + min)
+      return
+    }
+
+    var fee = 0.01
+    var newtx = {
+      txin: biggest.txin,
+      inputAmount: biggest.amount,
+      outputAddress: message[2],
+      amount: amount,
+      fee: fee,
+      proceeds: amount - fee,
+      changeAddress: biggest.addr,
+      changeAmount: biggest.amount - amount
+    }
+
+    console.log(newtx)
+
+    var keyPair3 = bitcoin.ECPair.fromPrivateKey(
+      Buffer.from(b3.toString(16).padStart(64, 0), 'hex'),
+      { network: BITMARK }
+    )
+    var privkey = keyPair3.toWIF()
+    console.log('private key WIF:', privkey)
+
+    if (newtx.changeAmount === 0) {
+      console.log(`btm bin/tx.sh ${newtx.txin.split(':')[0]} ${newtx.txin.split(':')[1]} ${newtx.outputAddress} ${newtx.proceeds / 1000} ${privkey}`)
+    } else {
+      console.log(`btm bin/tx.sh ${newtx.txin.split(':')[0]} ${newtx.txin.split(':')[1]} ${newtx.outputAddress} ${newtx.proceeds / 1000} ${privkey}`)
+    }
+
+    ctx.reply(`${JSON.stringify(newtx, null, 2)}`)
+
+
+    ctx.reply(`withdrawal request from ${biggest.txin} ${amount} of ${biggest.amount} to ${message[2]} queued for processing`)
   }
 
   // help
