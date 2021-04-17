@@ -29,13 +29,15 @@ function computeSHA256(lines) {
 globalThis.data = {
   ledger: null,
   credits: null,
-  file: null
+  file: null,
+  txexe: ''
 }
 
 //  init
 var ledgerFile = argv.ledger 
 var creditsFile = argv.credits 
 data.file = argv.file || data.file
+data.txexe = argv.txexe || data.txexe
 
 var ledger = require(ledgerFile)
 var credits = require(creditsFile)
@@ -407,8 +409,6 @@ sweep <txid:vout>
 
       const gitmarkTxBase = homedir + '/.gitmark/tx'
 
-
-
       const txFile = gitmarkTxBase + '/' + out.split(':')[0] + '.json'
 
       try {
@@ -416,26 +416,43 @@ sweep <txid:vout>
       } catch {
         console.log('missing', out.split(':')[0])
         missing.push(out.split(':')[0])
+        ctx.reply('missing tx ' + out.split(':')[0])
+        return
       }
 
-      var output = tx.outputs[out.split(':')[1]]
+      var vout = parseInt(out.split(':')[1])
+      console.log('vout', vout)
+      if (type === 'deposit') {
+        var output = tx.outputs[vout]
+      } else {
+        var vout = vout === 0 ? 1 : 0        
+        console.log('withdrawal vout', vout)
+        var output = tx.outputs[vout]
+        
+        if (!output) {
+          var obj = { txid: `${out.split(':')[0]}:${0}`, amount: 0, fee: 0, addr: 0, txin: out, comment: e.comment }
+          utxo.push(obj)
+          return
+        }
+      }
       console.log('tx', tx)
       console.log('received', tx.inputs.received_from)
       console.log(output)
-      var obj = { txid: out, amount: output.amount * 1000, fee: tx.fees*1000, addr: output.addr, txin: out, comment: e.comment }
+      var obj = { txid: `${out.split(':')[0]}:${vout}`, amount: output.amount * 1000, fee: tx.fees*1000, addr: output.addr, txin: out, comment: e.comment }
       utxo.push(obj)
       
     })
     
     console.log('utxo', utxo)
-    var withdrawals = utxo.filter(e => e.comment.match(/withrawal /) )
+    var withdrawals = utxo.filter(e => e.comment.match(/withdrawal /) )
     console.log('withdrawals', withdrawals)
     withdrawals.forEach(i => {
       console.log('processing withdrawals')
       console.log(i.comment)
       var f = utxo.findIndex(e => e.txid === i.comment.split(' ')[1])
       console.log('f', f, utxo[f])
-      utxo[f].amount = utxo[f].amount - i.amount - i.fee
+      utxo[f].amount = 0
+      
     })
     console.log('processed utxo', utxo)
 
@@ -468,7 +485,13 @@ sweep <txid:vout>
 
     if (missing.length > 0) {
       console.log('missing', missing)
-      ctx.reply('missing tx ' + missing)
+      ctx.reply('im missing tx ' + missing[0] + ' try again in 15s...')
+
+      var cmd = `./tx.sh ${missing[0]}`
+      console.log('downloading')
+      console.log(cmd)
+      exec(cmd, console.log)
+
       return
     }
 
@@ -487,7 +510,7 @@ sweep <txid:vout>
 
     var fee = 0.01
     var newtx = {
-      txin: biggest.txin,
+      txin: biggest.txid,
       inputAmount: biggest.amount,
       outputAddress: message[2],
       amount: amount,
@@ -497,7 +520,7 @@ sweep <txid:vout>
       changeAmount: biggest.amount - amount
     }
 
-    console.log(newtx)
+    console.log('newtx', newtx)
 
     var keyPair3 = bitcoin.ECPair.fromPrivateKey(
       Buffer.from(b3.toString(16).padStart(64, 0), 'hex'),
@@ -507,9 +530,74 @@ sweep <txid:vout>
     console.log('private key WIF:', privkey)
 
     if (newtx.changeAmount === 0) {
-      console.log(`btm bin/tx.sh ${newtx.txin.split(':')[0]} ${newtx.txin.split(':')[1]} ${newtx.outputAddress} ${newtx.proceeds / 1000} ${privkey}`)
+      var cmd = `${data.txexe}tx.sh ${newtx.txin.split(':')[0]} ${newtx.txin.split(':')[1]} ${newtx.outputAddress} ${newtx.proceeds / 1000} ${privkey}`
+      console.log('running', cmd)
+      exec(cmd, (error, stdout, stderr) => {
+        if (error) {
+          console.error(`error: ${error.message}`);
+          ctx.reply(`error: ${error.message}`)
+          return;
+        }
+      
+        if (stderr) {
+          console.error(`stderr: ${stderr}`);
+          ctx.reply(`stderr: ${stderr}`)
+          return;
+        }
+      
+        console.log(`txid:\n${stdout}`);
+        ctx.reply(`transaction submitted, please wait c. 2 minutes for one confirmation`);
+        ctx.reply(`txid:\n${stdout}`);
+
+        var credit = { source: user, destination: `${stdout}:0`, comment: `withdrawal ${w.txin}`, amount: newtx.amount, timestamp: Math.floor(Date.now() / 1000) }
+        console.log(credit)
+        if (credit) {
+          credits.push(credit)
+        }
+        console.log(credits)
+        console.log(ledger)
+    
+        // write files
+        console.log('wrting files', ledgerFile, creditsFile)
+        fs.writeFileSync(ledgerFile, JSON.stringify(ledger, null, 2))
+        fs.writeFileSync(creditsFile, JSON.stringify(credits, null, 2))        
+
+      })
     } else {
-      console.log(`btm bin/tx.sh ${newtx.txin.split(':')[0]} ${newtx.txin.split(':')[1]} ${newtx.outputAddress} ${newtx.proceeds / 1000} ${privkey}`)
+      var cmd = `${data.txexe}txc.sh ${newtx.txin.split(':')[0]} ${newtx.txin.split(':')[1]} ${newtx.outputAddress} ${newtx.proceeds / 1000} ${privkey} ${newtx.changeAddress} ${newtx.changeAmount/1000}`
+      console.log('running', cmd)    
+      exec(cmd, (error, stdout, stderr) => {
+        if (error) {
+          console.error(`error: ${error.message}`);
+          ctx.reply(`error: ${error.message}`)
+          return;
+        }
+      
+        if (stderr) {
+          console.error(`stderr: ${stderr}`);
+          ctx.reply(`stderr: ${stderr}`)
+          return;
+        }
+      
+        console.log(`txid:\n${stdout}`);
+        ctx.reply(`transaction submitted, please wait c. 2 minutes for one confirmation`);
+        ctx.reply(`txid:\n${stdout}`);
+
+        var credit = { source: user, destination: `${stdout}:0`, comment: `withdrawal ${newtx.txin}`, amount: newtx.amount, timestamp: Math.floor(Date.now() / 1000) }
+        console.log(credit)
+        if (credit) {
+          credits.push(credit)
+        }
+        console.log(credits)
+        console.log(ledger)
+    
+        // write files
+        console.log('wrting files', ledgerFile, creditsFile)
+        fs.writeFileSync(ledgerFile, JSON.stringify(ledger, null, 2))
+        fs.writeFileSync(creditsFile, JSON.stringify(credits, null, 2))        
+
+        
+      })
     }
 
     ctx.reply(`${JSON.stringify(newtx, null, 2)}`)
