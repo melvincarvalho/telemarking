@@ -136,6 +136,53 @@ bot.on('text', (ctx) => {
     ctx.reply(reply)
   }
 
+  // marks
+  if (message[0].toLocaleLowerCase() === 'marks') {
+    console.log('marks', message)
+
+    function getMarks(credits) {
+      return credits.filter(e => e.comment && !e.comment.match(/^withdraw/) && !e.comment.match(/^deposit/)  )
+    }
+
+    // reply
+    // ctx.reply('fetching balance for ' + user)
+    var marks = getMarks(credits)
+    var reply = marks.map(el => `${el.amount} ${getNickFromId(el.destination)} ${el.comment}`)
+    console.log(reply)
+    // var reply = JSON.stringify(credits, null, 2)
+    // console.log(reply)
+    ctx.reply(reply.slice(-20).join('\n'))
+  }
+
+  // givers
+  if (message[0].toLocaleLowerCase() === 'givers') {
+    console.log('givers', message)
+
+    function getMarks(credits) {
+      return credits.filter(e => e.comment && !e.comment.match(/^withdraw/) && !e.comment.match(/^deposit/)  )
+    }
+
+    // reply
+    // ctx.reply('fetching balance for ' + user)
+    var marks = getMarks(credits)
+
+    var top = {}
+    marks.forEach(el => {
+      var source = getNickFromId(el.source)
+      top[source] = top[source] || 0
+      top[source] += el.amount
+    })
+
+    var reply = '';
+    for (var property in top) {
+      reply += top[property] + ' ' + property + '\n'
+    }
+
+    ctx.reply(`Top Givers
+____________
+${reply}`)
+  }
+
   // balance
   if (message[0].toLocaleLowerCase() === 'balance') {
     console.log('balance', message)
@@ -598,7 +645,6 @@ sweep <txid:vout>
         fs.writeFileSync(ledgerFile, JSON.stringify(ledger, null, 2))
         fs.writeFileSync(creditsFile, JSON.stringify(credits, null, 2))        
 
-        
       })
     }
 
@@ -617,8 +663,11 @@ sweep <txid:vout>
 balance [user] - get balance
 balances - all balances
 deposit - get your deposit adddress
+givers - list top givers
 mark @user amount [comment] - mark user
-sweep - sweep a desposit into the ledger`)
+marks - get last 20 marks
+sweep - sweep a desposit into the ledger
+withdraw <amount> <address> - withdraws amount`)
   }
 
 
