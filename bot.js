@@ -444,7 +444,7 @@ sweep <txid:vout>
     })
     
     console.log('utxo', utxo)
-    var withdrawals = utxo.filter(e => e.comment.match(/withdrawal /) )
+    var withdrawals = utxo.filter(e => e.comment && e.comment.match && e.comment.match(/withdrawal /) )
     console.log('withdrawals', withdrawals)
     withdrawals.forEach(i => {
       console.log('processing withdrawals')
