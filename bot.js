@@ -14,6 +14,7 @@ const {createHash} = require('crypto')
 // commands
 const commands = {}
 commands.help = require('./commands/help.js').help
+commands.marks = require('./commands/marks.js').marks
 commands.wallet = require('./commands/wallet.js').wallet
 
 // lines: array of strings
@@ -50,11 +51,7 @@ var wallet = require(walletFile)
 var usernames = require('./usernames.json')
 
 // functions
-function getNickFromId(key) {
-  var keys = Object.keys(usernames)
-  var ret = keys.find(el => usernames[el] === key) 
-  return ret || key
-}
+const getNickFromId = require('./functions.js').getNickFromId
 
 // FUNCTIONS
 const BITMARK = {
@@ -138,23 +135,6 @@ bot.on('text', (ctx) => {
     ctx.reply(reply)
   }
 
-  // marks
-  if (message[0].toLocaleLowerCase() === 'marks') {
-    console.log('marks', message)
-
-    function getMarks(credits) {
-      return credits.filter(e => e.comment && !e.comment.match(/^withdraw/) && !e.comment.match(/^deposit/)  )
-    }
-
-    // reply
-    // ctx.reply('fetching balance for ' + user)
-    var marks = getMarks(credits)
-    var reply = marks.map(el => `${el.amount} ${getNickFromId(el.destination)} ${el.comment}`)
-    console.log(reply)
-    // var reply = JSON.stringify(credits, null, 2)
-    // console.log(reply)
-    ctx.reply(reply.slice(-20).join('\n'))
-  }
 
   // givers
   if (message[0].toLocaleLowerCase() === 'givers') {
@@ -655,6 +635,14 @@ sweep <txid:vout>
 
     ctx.reply(`withdrawal request from ${biggest.txin} ${amount} of ${biggest.amount} to ${message[2]} queued for processing`)
   }
+
+  // marks
+  if (message[0].toLocaleLowerCase() === 'marks') {
+    console.log('marks', message)
+
+    commands.marks(ctx, wallet, credits)
+  }
+
 
   // wallet
   if (message[0].toLocaleLowerCase() === 'wallet') {
