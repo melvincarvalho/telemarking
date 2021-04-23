@@ -18,6 +18,7 @@ commands.marks = require('./commands/marks.js').marks
 commands.balances = require('./commands/balances.js').balances
 commands.wallet = require('./commands/wallet.js').wallet
 commands.givers = require('./commands/givers.js').givers
+commands.balance = require('./commands/balance.js').balance
 
 // functions
 const getNickFromId = require('./functions.js').getNickFromId
@@ -84,28 +85,6 @@ bot.on('text', (ctx) => {
   var text = ctx.message.text
   var message = ctx.message.text.split(' ')
 
-
-
-
-  // balance
-  if (message[0].toLocaleLowerCase() === 'balance') {
-    console.log('balance', message)
-
-    // get user for balance
-    var user = from
-    if (message[1] && usernames[message[1]]) {
-      user = usernames[message[1]]
-    }
-
-    // get balance
-    var balance = ledger[user] || 0
-    console.log(ledger)
-    console.log(balance)
-
-    // reply
-    // ctx.reply('fetching balance for ' + user)
-    ctx.reply('balance:' + balance + ' (' + getNickFromId(user) + ')')
-  }
 
   // sweep
   if (message[0].toLocaleLowerCase() === 'sweep') {
@@ -579,6 +558,12 @@ sweep <txid:vout>
     commands.balances(ctx, ledger)
   }
 
+  // balance
+  if (message[0].toLocaleLowerCase() === 'balance') {
+    console.log('balance', message)
+    commands.balance(ctx, message, from, ledger, usernames)
+  }
+  
 
   // wallet
   if (message[0].toLocaleLowerCase() === 'wallet') {
