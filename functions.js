@@ -34,6 +34,21 @@ function addressFromKeys(privkey, hash) {
   return address
 }
 
+function privAddressFromKeys(privkey, hash) {
+  const b1 = BigInt('0x' + privkey)
+  const b2 = BigInt('0x' + hash)
+  const b3 = BigInt.asUintN(256, b1 + b2)
+
+  var keyPair3 = bitcoin.ECPair.fromPrivateKey(
+    Buffer.from(b3.toString(16).padStart(64, 0), 'hex'),
+    { network: BITMARK }
+  )
+  var privkey = keyPair3.toWIF()
+  
+  return privkey
+}
+
+
 function getPrivKey (file) {
   try {
     const fetchHeadDir = './.git/'
@@ -96,3 +111,4 @@ exports.computeSHA256 = computeSHA256
 exports.getNickFromId = getNickFromId
 exports.getPrivKey = getPrivKey
 exports.addressFromKeys = addressFromKeys
+exports.privAddressFromKeys = privAddressFromKeys
