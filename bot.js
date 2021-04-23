@@ -21,6 +21,7 @@ commands.givers = require('./commands/givers.js').givers
 commands.balance = require('./commands/balance.js').balance
 commands.mark = require('./commands/mark.js').mark
 commands.deposit = require('./commands/deposit.js').deposit
+commands.sweep = require('./commands/sweep.js').sweep
 
 // functions
 const getNickFromId = require('./functions.js').getNickFromId
@@ -87,105 +88,6 @@ bot.on('text', (ctx) => {
   // get text and split into message array
   var text = ctx.message.text
   var message = text.split(' ')
-
-  // sweep
-  if (message[0].toLocaleLowerCase() === 'sweep') {
-    console.log('sweep', message)
-
-    // get sweep tx
-    var tx = message[1].split(':')
-    var vout = tx[1] || 0
-    if (!tx) {
-      ctx.reply(`need a tx to sweep`)
-      return
-    }
-
-    try {
-      var rawtx = require(homedir + '/.gitmark/tx/' + tx[0] + '.json')
-
-    } catch (e) {
-      console.log(e)
-      ctx.reply(`I dont know about tx: ${tx[0]}
-searching ... try again in 15s`)
-console.log(tx[0] , tx[0].length === 64 , tx[0].match(/^[0-9]abcdef$/))
-      if (tx[0] && tx[0].length === 64 && tx[0].match(/^[0-9abcdef]+$/)) {
-        var cmd = `./tx.sh ${tx[0]}`
-        console.log('downloading')
-        console.log(cmd)
-        exec(cmd, console.log)
-      }
-      return
-    }
-
-    console.log('rawtx', rawtx)
-    outputs = rawtx.outputs
-    console.log('outputs', outputs)
-    var output = outputs[vout]
-    console.log('output', output)
-
-    var amount = output.amount * 1000
-    var outputaddress = output.addr
-
-    var user = from
-    var hash = computeSHA256(user)
-    var privkey = getPrivKey(data.file)
-
-    // priv keys
-    const b1 = BigInt('0x' + privkey)
-    const b2 = BigInt('0x' + hash)
-    const b3 = BigInt.asUintN(256, b1 + b2)
-
-    var keyPair3 = bitcoin.ECPair.fromPrivateKey(
-      Buffer.from(b3.toString(16).padStart(64, 0), 'hex')
-    )
-
-    // address from priv key addition
-    var { address } = bitcoin.payments.p2pkh({
-      pubkey: keyPair3.publicKey,
-      network: BITMARK
-    })
-
-    if (address === outputaddress) {
-      console.log('matches')
-    } else {
-      console.log('address does not match user')
-      ctx.reply(`address does not match user`)
-      return
-    }
-
-    // check for dups
-    var dup = credits.find(e => e.source === message[1] )
-    if (dup) {
-      console.log('duplicate')
-      ctx.reply(`duplicate`)
-      return
-    }
-
-
-    console.log('sweeping')
-    var source = message[1]
-    ledger[user] += amount
-    console.log('newledger', ledger)
-    ctx.reply('swept ' + amount + ' to ' + user + ' via ' + message[1])
-    var credit = { source: tx[0] + ':' + tx[1], destination: user, amount: amount, comment: 'deposit', timestamp: Math.floor(Date.now() / 1000) }
-    console.log(credit)
-    if (credit) {
-      credits.push(credit)
-    }
-    console.log(credits)
-    console.log(ledger)
-
-    // write files
-    console.log('wrting files', ledgerFile, creditsFile)
-    fs.writeFileSync(ledgerFile, JSON.stringify(ledger, null, 2))
-    fs.writeFileSync(creditsFile, JSON.stringify(credits, null, 2))
-
-
-    // reply
-    // ctx.reply('fetching balance for ' + user)
-    // ctx.reply(`sweep ${message[1]}`)
-  }
-
 
 
   // withdraw
@@ -285,19 +187,20 @@ console.log(tx[0] , tx[0].length === 64 , tx[0].match(/^[0-9]abcdef$/))
     var privkey = getPrivKey(data.file)
 
     // priv keys
-    const b1 = BigInt('0x' + privkey)
-    const b2 = BigInt('0x' + hash)
-    const b3 = BigInt.asUintN(256, b1 + b2)
+    var address = addressFromKeys(privkey, hash)
+    // const b1 = BigInt('0x' + privkey)
+    // const b2 = BigInt('0x' + hash)
+    // const b3 = BigInt.asUintN(256, b1 + b2)
 
-    var keyPair3 = bitcoin.ECPair.fromPrivateKey(
-      Buffer.from(b3.toString(16).padStart(64, 0), 'hex')
-    )
+    // var keyPair3 = bitcoin.ECPair.fromPrivateKey(
+    //   Buffer.from(b3.toString(16).padStart(64, 0), 'hex')
+    // )
 
-    // address from priv key addition
-    var { address } = bitcoin.payments.p2pkh({
-      pubkey: keyPair3.publicKey,
-      network: BITMARK
-    })
+    // // address from priv key addition
+    // var { address } = bitcoin.payments.p2pkh({
+    //   pubkey: keyPair3.publicKey,
+    //   network: BITMARK
+    // })
 
     var mine = utxo.filter(e => e.addr === address)
     mine= mine.sort((a, b) => b.amount - a.amount)
@@ -480,6 +383,13 @@ console.log(tx[0] , tx[0].length === 64 , tx[0].match(/^[0-9]abcdef$/))
     console.log('help', message)
     commands.help(ctx)
   }
+
+  // sweep
+  if (message[0].toLocaleLowerCase() === 'sweep') {
+    console.log('sweep', message)
+    commands.sweep(ctx, message, from, data.file, ledger, credits, ledgerFile, creditsFile)
+  }
+
 
 
 })
