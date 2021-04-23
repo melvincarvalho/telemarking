@@ -20,15 +20,6 @@ commands.deposit = require('./commands/deposit.js').deposit
 commands.sweep = require('./commands/sweep.js').sweep
 commands.withdraw = require('./commands/withdraw.js').withdraw
 
-// functions
-const getNickFromId = require('./functions.js').getNickFromId
-
-const computeSHA256 = require('./functions.js').computeSHA256
-
-const getPrivKey = require('./functions.js').getPrivKey
-const addressFromKeys = require('./functions.js').addressFromKeys
-
-
 // network
 const BITMARK = {
   messagePrefix: '\x19BITMARK Signed Message:\n',
