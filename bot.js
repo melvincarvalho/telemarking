@@ -27,6 +27,7 @@ const getNickFromId = require('./functions.js').getNickFromId
 const computeSHA256 = require('./functions.js').computeSHA256
 
 const getPrivKey = require('./functions.js').getPrivKey
+const addressFromKeys = require('./functions.js').addressFromKeys
 
 
 // network
@@ -84,8 +85,7 @@ bot.on('text', (ctx) => {
 
   // get text and split into message array
   var text = ctx.message.text
-  var message = ctx.message.text.split(' ')
-
+  var message = text.split(' ')
 
   // sweep
   if (message[0].toLocaleLowerCase() === 'sweep') {
@@ -194,20 +194,7 @@ console.log(tx[0] , tx[0].length === 64 , tx[0].match(/^[0-9]abcdef$/))
     var hash = computeSHA256(user)
     var privkey = getPrivKey(data.file)
 
-    // priv keys
-    const b1 = BigInt('0x' + privkey)
-    const b2 = BigInt('0x' + hash)
-    const b3 = BigInt.asUintN(256, b1 + b2)
-
-    var keyPair3 = bitcoin.ECPair.fromPrivateKey(
-      Buffer.from(b3.toString(16).padStart(64, 0), 'hex')
-    )
-
-    // address from priv key addition
-    var { address } = bitcoin.payments.p2pkh({
-      pubkey: keyPair3.publicKey,
-      network: BITMARK
-    })
+    var address = addressFromKeys(privkey, hash)
     console.log('address computed from private', address)    
 
     // get user for balance

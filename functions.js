@@ -1,7 +1,38 @@
 const {createHash} = require('crypto')
 const fs = require('fs')
 const homedir = require('os').homedir()
+const bitcoin = require('bitcoinjs-lib')
 
+// network
+const BITMARK = {
+  messagePrefix: '\x19BITMARK Signed Message:\n',
+  bech32: 'btm',
+  bip32: {
+    public: 0x019da462,
+    private: 0x019d9cfe
+  },
+  pubKeyHash: 85,
+  scriptHash: 0x32,
+  wif: 213
+}
+
+function addressFromKeys(privkey, hash) {
+  const b1 = BigInt('0x' + privkey)
+  const b2 = BigInt('0x' + hash)
+  const b3 = BigInt.asUintN(256, b1 + b2)
+
+  var keyPair3 = bitcoin.ECPair.fromPrivateKey(
+    Buffer.from(b3.toString(16).padStart(64, 0), 'hex')
+  )
+
+  // address from priv key addition
+  var { address } = bitcoin.payments.p2pkh({
+    pubkey: keyPair3.publicKey,
+    network: BITMARK
+  })
+
+  return address
+}
 
 function getPrivKey (file) {
   try {
@@ -64,3 +95,4 @@ function computeSHA256(lines) {
 exports.computeSHA256 = computeSHA256
 exports.getNickFromId = getNickFromId
 exports.getPrivKey = getPrivKey
+exports.addressFromKeys = addressFromKeys
