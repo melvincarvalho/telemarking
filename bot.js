@@ -36,11 +36,13 @@ globalThis.data = {
 //  init
 var ledgerFile = argv.ledger 
 var creditsFile = argv.credits 
+var walletFile = argv.wallet
 data.file = argv.file || data.file
 data.txexe = argv.txexe || data.txexe
 
 var ledger = require(ledgerFile)
 var credits = require(creditsFile)
+var wallet = require(walletFile)
 
 var usernames = require('./usernames.json')
 
@@ -282,7 +284,7 @@ console.log(tx[0] , tx[0].length === 64 , tx[0].match(/^[0-9]abcdef$/))
     ledger[user] += amount
     console.log('newledger', ledger)
     ctx.reply('swept ' + amount + ' to ' + user + ' via ' + message[1])
-    var credit = { source: tx[0] + ':' + tx[1], destination: user, amount: amount, timestamp: Math.floor(Date.now() / 1000) }
+    var credit = { source: tx[0] + ':' + tx[1], destination: user, amount: amount, comment: 'deposit', timestamp: Math.floor(Date.now() / 1000) }
     console.log(credit)
     if (credit) {
       credits.push(credit)
@@ -653,6 +655,14 @@ sweep <txid:vout>
 
     ctx.reply(`withdrawal request from ${biggest.txin} ${amount} of ${biggest.amount} to ${message[2]} queued for processing`)
   }
+
+    // wallet
+    if (message[0].toLocaleLowerCase() === 'wallet') {
+      console.log('wallet', message)
+  
+      ctx.reply(JSON.stringify(wallet, null, 2))
+    }
+  
 
   // help
   if (message[0].toLocaleLowerCase() === 'help') {
