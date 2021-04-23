@@ -15,6 +15,7 @@ const exec = require('child_process').exec
 const commands = {}
 commands.help = require('./commands/help.js').help
 commands.marks = require('./commands/marks.js').marks
+commands.balances = require('./commands/balances.js').balances
 commands.wallet = require('./commands/wallet.js').wallet
 
 // functions
@@ -82,16 +83,6 @@ bot.on('text', (ctx) => {
   var text = ctx.message.text
   var message = ctx.message.text.split(' ')
 
-  // balances
-  if (message[0].toLocaleLowerCase() === 'balances') {
-    console.log('balances', message)
-
-    // reply
-    // ctx.reply('fetching balance for ' + user)
-    var reply = JSON.stringify(ledger, null, 2)
-    console.log(reply)
-    ctx.reply(reply)
-  }
 
 
   // givers
@@ -599,6 +590,13 @@ sweep <txid:vout>
     console.log('marks', message)
 
     commands.marks(ctx, wallet, credits)
+  }
+
+  // balances
+  if (message[0].toLocaleLowerCase() === 'balances') {
+    console.log('balances', message)
+
+    commands.balances(ctx, ledger)
   }
 
 
