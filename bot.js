@@ -10,9 +10,9 @@ const argv = require('minimist')(process.argv.slice(2))
 const homedir = require('os').homedir()
 const exec = require('child_process').exec
 const {createHash} = require('crypto')
-const commands = {}
 
 // commands
+const commands = {}
 commands.help = require('./commands/help.js').help
 commands.wallet = require('./commands/wallet.js').wallet
 
@@ -114,11 +114,8 @@ function getPrivKey (file) {
 const bot = new Telegraf(process.env.BOT_TOKEN)
 bot.start((ctx) => ctx.reply('Welcome'))
 bot.help((ctx) => ctx.reply('Send me a sticker'))
-bot.on('sticker', (ctx) => ctx.reply('👍'))
-bot.hears('hi', (ctx) => ctx.reply('Hey there'))
-bot.command('oldschool', (ctx) => ctx.reply('Hello'))
-bot.command('hipster', Telegraf.reply('λ'))
 
+// events
 bot.on('text', (ctx) => {
   // log
   console.log(ctx.message)
