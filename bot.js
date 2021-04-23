@@ -17,6 +17,7 @@ commands.help = require('./commands/help.js').help
 commands.marks = require('./commands/marks.js').marks
 commands.balances = require('./commands/balances.js').balances
 commands.wallet = require('./commands/wallet.js').wallet
+commands.givers = require('./commands/givers.js').givers
 
 // functions
 const getNickFromId = require('./functions.js').getNickFromId
@@ -85,34 +86,6 @@ bot.on('text', (ctx) => {
 
 
 
-  // givers
-  if (message[0].toLocaleLowerCase() === 'givers') {
-    console.log('givers', message)
-
-    function getMarks(credits) {
-      return credits.filter(e => e.comment && !e.comment.match(/^withdraw/) && !e.comment.match(/^deposit/)  )
-    }
-
-    // reply
-    // ctx.reply('fetching balance for ' + user)
-    var marks = getMarks(credits)
-
-    var top = {}
-    marks.forEach(el => {
-      var source = getNickFromId(el.source)
-      top[source] = top[source] || 0
-      top[source] += el.amount
-    })
-
-    var reply = '';
-    for (var property in top) {
-      reply += top[property] + ' ' + property + '\n'
-    }
-
-    ctx.reply(`Top Givers
-____________
-${reply}`)
-  }
 
   // balance
   if (message[0].toLocaleLowerCase() === 'balance') {
@@ -590,6 +563,13 @@ sweep <txid:vout>
     console.log('marks', message)
 
     commands.marks(ctx, wallet, credits)
+  }
+
+  // givers
+  if (message[0].toLocaleLowerCase() === 'givers') {
+    console.log('givers', message)
+
+    commands.givers(ctx, credits)
   }
 
   // balances
