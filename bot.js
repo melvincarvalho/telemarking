@@ -20,6 +20,7 @@ commands.wallet = require('./commands/wallet.js').wallet
 commands.givers = require('./commands/givers.js').givers
 commands.balance = require('./commands/balance.js').balance
 commands.mark = require('./commands/mark.js').mark
+commands.deposit = require('./commands/deposit.js').deposit
 
 // functions
 const getNickFromId = require('./functions.js').getNickFromId
@@ -186,39 +187,6 @@ console.log(tx[0] , tx[0].length === 64 , tx[0].match(/^[0-9]abcdef$/))
   }
 
 
-  // deposit
-  if (message[0].toLocaleLowerCase() === 'deposit') {
-    console.log('deposit', message)
-
-    var user = from
-    var hash = computeSHA256(user)
-    var privkey = getPrivKey(data.file)
-
-    var address = addressFromKeys(privkey, hash)
-    console.log('address computed from private', address)    
-
-    // get user for balance
-    if (message[1] && usernames[message[1]]) {
-      user = usernames[message[1]]
-    }
-
-    // reply
-    ctx.reply(`Deposit Details:
-
-________________
-nick: ${getNickFromId(user)}
-userid: ${user} 
-Hash: ${hash}
-________________
-
-deposit address: ${address}
-
-After 1 confirmation tx type:
-
-sweep <txid:vout>
-`)
-
-  }
 
   // withdraw
   if (message[0].toLocaleLowerCase() === 'withdraw') {
@@ -488,7 +456,12 @@ sweep <txid:vout>
     console.log('balance', message)
     commands.balance(ctx, message, from, ledger, usernames)
   }
-  
+
+  // deposit
+  if (message[0].toLocaleLowerCase() === 'deposit') {
+    console.log('deposit', message)
+    commands.deposit(ctx, message, from, data.file, usernames)
+  }
 
   // wallet
   if (message[0].toLocaleLowerCase() === 'wallet') {
