@@ -9,9 +9,10 @@ const { Telegraf } = require('telegraf')
 const argv = require('minimist')(process.argv.slice(2))
 const homedir = require('os').homedir()
 const exec = require('child_process').exec
+const {createHash} = require('crypto')
 
-
-const {createHash} = require('crypto');
+// commands
+const { help } = require('./commands/help.js')
 
 // lines: array of strings
 function computeSHA256(lines) {
@@ -667,17 +668,7 @@ sweep <txid:vout>
   // help
   if (message[0].toLocaleLowerCase() === 'help') {
     console.log('help', message)
-
-    ctx.reply(`Markbot help:
-
-balance [user] - get balance
-balances - all balances
-deposit - get your deposit adddress
-givers - list top givers
-mark @user amount [comment] - mark user
-marks - get last 20 marks
-sweep - sweep a desposit into the ledger
-withdraw <amount> <address> - withdraws amount`)
+    help(ctx)
   }
 
 
