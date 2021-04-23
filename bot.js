@@ -4,12 +4,12 @@
 
 // requires
 const fs = require('fs')
-const bitcoin = require('bitcoinjs-lib')
-const { Telegraf } = require('telegraf')
 const argv = require('minimist')(process.argv.slice(2))
 const homedir = require('os').homedir()
+
+const bitcoin = require('bitcoinjs-lib')
+const { Telegraf } = require('telegraf')
 const exec = require('child_process').exec
-const {createHash} = require('crypto')
 
 // commands
 const commands = {}
@@ -17,25 +17,36 @@ commands.help = require('./commands/help.js').help
 commands.marks = require('./commands/marks.js').marks
 commands.wallet = require('./commands/wallet.js').wallet
 
-// lines: array of strings
-function computeSHA256(lines) {
-  const hash = createHash('sha256');
-  for (let i = 0; i < lines.length; i++) {
-    const line = lines[i].trim(); // remove leading/trailing whitespace
-    if (line === '') continue; // skip empty lines
-    hash.write(line); // write a single line to the buffer
-  }
+// functions
+const getNickFromId = require('./functions.js').getNickFromId
 
-  return hash.digest('hex'); // returns hash as string
+const computeSHA256 = require('./functions.js').computeSHA256
+
+const getPrivKey = require('./functions.js').getPrivKey
+
+
+// network
+const BITMARK = {
+  messagePrefix: '\x19BITMARK Signed Message:\n',
+  bech32: 'btm',
+  bip32: {
+    public: 0x019da462,
+    private: 0x019d9cfe
+  },
+  pubKeyHash: 85,
+  scriptHash: 0x32,
+  wif: 213
 }
 
-// MODEL
+
+// model
 globalThis.data = {
   ledger: null,
   credits: null,
   file: null,
   txexe: ''
 }
+
 
 //  init
 var ledgerFile = argv.ledger 
@@ -50,62 +61,9 @@ var wallet = require(walletFile)
 
 var usernames = require('./usernames.json')
 
-// functions
-const getNickFromId = require('./functions.js').getNickFromId
-
-// FUNCTIONS
-const BITMARK = {
-  messagePrefix: '\x19BITMARK Signed Message:\n',
-  bech32: 'btm',
-  bip32: {
-    public: 0x019da462,
-    private: 0x019d9cfe
-  },
-  pubKeyHash: 85,
-  scriptHash: 0x32,
-  wif: 213
-}
 
 
 
-function getPrivKey (file) {
-  try {
-    const fetchHeadDir = './.git/'
-    var fetchHeadFile = fetchHeadDir + 'FETCH_HEAD'
-
-    var fetchHead = fs.readFileSync(fetchHeadFile).toString()
-
-    var repo = fetchHead
-      .split(' ')
-      .pop()
-      .replace(':', '/')
-      .replace('\n', '')
-
-    const gitmarkRepoBase = homedir + '/.gitmark/repo'
-
-    const gitmarkFile = file || gitmarkRepoBase + '/' + repo + '/gitmark.json'
-
-    return require(gitmarkFile).privkey
-  } catch (e) {
-    const fetchHeadDir = './.git/'
-    var fetchHeadFile = fetchHeadDir + 'FETCH_HEAD'
-
-    var fetchHead = fs.readFileSync(fetchHeadFile).toString()
-
-    var repo = fetchHead
-      .split(' ')
-      .pop()
-      .replace(':', '/')
-      .replace('\n', '')
-
-    const gitmarkRepoBase = homedir + '/.gitmark/repo'
-
-    const gitmarkFile = gitmarkRepoBase + '/' + repo + '/gitmark.json'
-
-    console.log('no priv key found in', gitmarkFile)
-    return undefined
-  }
-}
 
 // main
 const bot = new Telegraf(process.env.BOT_TOKEN)
