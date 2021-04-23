@@ -10,9 +10,11 @@ const argv = require('minimist')(process.argv.slice(2))
 const homedir = require('os').homedir()
 const exec = require('child_process').exec
 const {createHash} = require('crypto')
+const commands = {}
 
 // commands
-const { help } = require('./commands/help.js')
+commands.help = require('./commands/help.js').help
+commands.wallet = require('./commands/wallet.js').wallet
 
 // lines: array of strings
 function computeSHA256(lines) {
@@ -657,27 +659,17 @@ sweep <txid:vout>
     ctx.reply(`withdrawal request from ${biggest.txin} ${amount} of ${biggest.amount} to ${message[2]} queued for processing`)
   }
 
-    // wallet
-    if (message[0].toLocaleLowerCase() === 'wallet') {
-      console.log('wallet', message)
-  
-      ctx.reply(JSON.stringify(wallet, null, 2))
-    }
-  
+  // wallet
+  if (message[0].toLocaleLowerCase() === 'wallet') {
+    console.log('wallet', message)
+    commands.wallet(ctx, wallet)
+  }
 
   // help
   if (message[0].toLocaleLowerCase() === 'help') {
     console.log('help', message)
-    help(ctx)
+    commands.help(ctx)
   }
-
-
-
-  // fun stuff
-  if (text === 'open pod bay doors') {
-    ctx.reply('I cant allow you to do that, Dave')
-  }
-
 
 })
 
