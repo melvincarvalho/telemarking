@@ -42,11 +42,11 @@ function privAddressFromKeys (privkey, hash) {
 function getPrivKey (file) {
   try {
     const fetchHeadDir = './.git/'
-    let fetchHeadFile = fetchHeadDir + 'FETCH_HEAD'
+    const fetchHeadFile = fetchHeadDir + 'FETCH_HEAD'
 
-    let fetchHead = fs.readFileSync(fetchHeadFile).toString()
+    const fetchHead = fs.readFileSync(fetchHeadFile).toString()
 
-    let repo = fetchHead
+    const repo = fetchHead
       .split(' ')
       .pop()
       .replace(':', '/')
@@ -59,11 +59,11 @@ function getPrivKey (file) {
     return require(gitmarkFile).privkey
   } catch (e) {
     const fetchHeadDir = './.git/'
-    let fetchHeadFile = fetchHeadDir + 'FETCH_HEAD'
+    const fetchHeadFile = fetchHeadDir + 'FETCH_HEAD'
 
-    let fetchHead = fs.readFileSync(fetchHeadFile).toString()
+    const fetchHead = fs.readFileSync(fetchHeadFile).toString()
 
-    let repo = fetchHead
+    const repo = fetchHead
       .split(' ')
       .pop()
       .replace(':', '/')

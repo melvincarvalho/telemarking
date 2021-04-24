@@ -6,16 +6,14 @@ const getPrivKey = require('../functions.js').getPrivKey
 
 const addressFromKeys = require('../functions.js').addressFromKeys
 
-
-function deposit(ctx, message, user, file, usernames) {
-
+function deposit (ctx, message, user, file, usernames) {
   console.log('deposit', message)
 
-  var hash = computeSHA256(user)
-  var privkey = getPrivKey(file)
+  const hash = computeSHA256(user)
+  const privkey = getPrivKey(file)
 
-  var address = addressFromKeys(privkey, hash)
-  console.log('address computed from private', address)    
+  const address = addressFromKeys(privkey, hash)
+  console.log('address computed from private', address)
 
   // get user for balance
   if (message[1] && usernames[message[1]]) {
@@ -37,7 +35,6 @@ After 1 confirmation tx type:
 
 sweep <txid:vout>
 `)
-
 }
 
 exports.deposit = deposit

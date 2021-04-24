@@ -1,4 +1,4 @@
-function help(ctx) {
+function help (ctx) {
   ctx.reply(`Markbot help:
 
 balance [user] - get balance

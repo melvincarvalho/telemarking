@@ -1,16 +1,16 @@
 const fs = require('fs')
 
-function mark(ctx, user, usernames, message, ledger, credits, ledgerFile, creditsFile) {
+function mark (ctx, user, usernames, message, ledger, credits, ledgerFile, creditsFile) {
   console.log('mark', message)
 
   // get destination
-  var destination = null
+  let destination = null
   if (message[1] && usernames[message[1]]) {
     destination = usernames[message[1]]
-  }    
+  }
   if (!destination) {
     ctx.reply('no destination to mark')
-    return;
+    return
   }
 
   // get amount
@@ -20,7 +20,7 @@ function mark(ctx, user, usernames, message, ledger, credits, ledgerFile, credit
   }
   if (!amount) {
     ctx.reply('specify a non zero amount to mark')
-    return;
+    return
   }
 
   // get reason
@@ -30,7 +30,7 @@ function mark(ctx, user, usernames, message, ledger, credits, ledgerFile, credit
   console.log('reason', message)
 
   // get balance
-  var balance = ledger[user] || 0
+  const balance = ledger[user] || 0
   console.log(ledger)
   console.log(balance)
 
@@ -41,7 +41,7 @@ function mark(ctx, user, usernames, message, ledger, credits, ledgerFile, credit
     ledger[destination] += amount
     console.log('newledger', ledger)
     ctx.reply('marked ' + amount + ' to ' + destination)
-    var credit = { source: user, destination: destination, amount: amount, comment: message.join(' '), timestamp: Math.floor(Date.now() / 1000) }
+    const credit = { source: user, destination: destination, amount: amount, comment: message.join(' '), timestamp: Math.floor(Date.now() / 1000) }
     console.log(credit)
     if (credit) {
       credits.push(credit)
@@ -57,7 +57,6 @@ function mark(ctx, user, usernames, message, ledger, credits, ledgerFile, credit
     console.log('no funds')
     ctx.reply('no funds')
   }
-
 }
 
 exports.mark = mark
