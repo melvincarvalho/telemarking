@@ -1,20 +1,13 @@
+// var NETWORK = BITCOIN
+// var NETWORK = LITECOIN
+// var NETWORK = BITMARK
+// var NETWORK = TESTNET
+var NETWORK = require('./networks.js').BITMARK
+
 const {createHash} = require('crypto')
 const fs = require('fs')
 const homedir = require('os').homedir()
 const bitcoin = require('bitcoinjs-lib')
-
-// network
-const BITMARK = {
-  messagePrefix: '\x19BITMARK Signed Message:\n',
-  bech32: 'btm',
-  bip32: {
-    public: 0x019da462,
-    private: 0x019d9cfe
-  },
-  pubKeyHash: 85,
-  scriptHash: 0x32,
-  wif: 213
-}
 
 function addressFromKeys(privkey, hash) {
   const b1 = BigInt('0x' + privkey)
@@ -28,7 +21,7 @@ function addressFromKeys(privkey, hash) {
   // address from priv key addition
   var { address } = bitcoin.payments.p2pkh({
     pubkey: keyPair3.publicKey,
-    network: BITMARK
+    network: NETWORK
   })
 
   return address
@@ -41,7 +34,7 @@ function privAddressFromKeys(privkey, hash) {
 
   var keyPair3 = bitcoin.ECPair.fromPrivateKey(
     Buffer.from(b3.toString(16).padStart(64, 0), 'hex'),
-    { network: BITMARK }
+    { network: NETWORK }
   )
   var privkey = keyPair3.toWIF()
   

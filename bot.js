@@ -20,62 +20,45 @@ commands.deposit = require('./commands/deposit.js').deposit
 commands.sweep = require('./commands/sweep.js').sweep
 commands.withdraw = require('./commands/withdraw.js').withdraw
 
-// network
-const BITMARK = {
-  messagePrefix: '\x19BITMARK Signed Message:\n',
-  bech32: 'btm',
-  bip32: {
-    public: 0x019da462,
-    private: 0x019d9cfe
-  },
-  pubKeyHash: 85,
-  scriptHash: 0x32,
-  wif: 213
-}
-
-
 // model
 globalThis.data = {
   ledger: null,
   credits: null,
   file: null,
-  txexe: ''
+  txexe: '',
+  // BITCOIN, LITECOIN, LIQUID, BITMARK, TESTNET3
+  network: require('./networks.js').BITMARK
 }
 
-
 //  init
-var ledgerFile = argv.ledger 
-var creditsFile = argv.credits 
-var walletFile = argv.wallet
+const ledgerFile = argv.ledger
+const creditsFile = argv.credits
+const walletFile = argv.wallet
 data.file = argv.file || data.file
 data.txexe = argv.txexe || data.txexe
 
-var ledger = require(ledgerFile)
-var credits = require(creditsFile)
-var wallet = require(walletFile)
+const ledger = require(ledgerFile)
+const credits = require(creditsFile)
+const wallet = require(walletFile)
 
-var usernames = require('./usernames.json')
-
-
-
-
+const usernames = require('./usernames.json')
 
 // main
 const bot = new Telegraf(process.env.BOT_TOKEN)
-bot.start((ctx) => ctx.reply('Welcome'))
-bot.help((ctx) => ctx.reply('Send me a sticker'))
+bot.start(ctx => ctx.reply('Welcome'))
+bot.help(ctx => ctx.reply('Send me a sticker'))
 
 // events
-bot.on('text', (ctx) => {
+bot.on('text', ctx => {
   // log
   console.log(ctx.message)
 
   // get from id
-  var from = 'urn:telegram:' + ctx.message.from.id
+  const from = 'urn:telegram:' + ctx.message.from.id
 
   // get text and split into message array
-  var text = ctx.message.text
-  var message = text.split(' ')
+  const text = ctx.message.text
+  const message = text.split(' ')
 
   // marks
   if (message[0].toLocaleLowerCase() === 'marks') {
@@ -119,8 +102,17 @@ bot.on('text', (ctx) => {
   // mark
   if (message[0].toLocaleLowerCase() === 'mark') {
     console.log('mark', message)
-    commands.mark(ctx, from, usernames, message, ledger, credits, ledgerFile, creditsFile)
-  }  
+    commands.mark(
+      ctx,
+      from,
+      usernames,
+      message,
+      ledger,
+      credits,
+      ledgerFile,
+      creditsFile
+    )
+  }
 
   // help
   if (message[0].toLocaleLowerCase() === 'help') {
@@ -131,15 +123,32 @@ bot.on('text', (ctx) => {
   // sweep
   if (message[0].toLocaleLowerCase() === 'sweep') {
     console.log('sweep', message)
-    commands.sweep(ctx, message, from, data.file, ledger, credits, ledgerFile, creditsFile)
+    commands.sweep(
+      ctx,
+      message,
+      from,
+      data.file,
+      ledger,
+      credits,
+      ledgerFile,
+      creditsFile
+    )
   }
 
   // withdraw
   if (message[0].toLocaleLowerCase() === 'withdraw') {
     console.log('withdraw', message)
-    commands.withdraw(ctx, message, from, data.file, ledger, credits, ledgerFile, creditsFile)
+    commands.withdraw(
+      ctx,
+      message,
+      from,
+      data.file,
+      ledger,
+      credits,
+      ledgerFile,
+      creditsFile
+    )
   }
-
 })
 
 bot.launch()
