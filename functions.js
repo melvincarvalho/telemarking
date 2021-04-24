@@ -2,24 +2,24 @@
 // var NETWORK = LITECOIN
 // var NETWORK = BITMARK
 // var NETWORK = TESTNET
-var NETWORK = require('./networks.js').BITMARK
+const NETWORK = require('./networks.js').BITMARK
 
-const {createHash} = require('crypto')
+const { createHash } = require('crypto')
 const fs = require('fs')
 const homedir = require('os').homedir()
 const bitcoin = require('bitcoinjs-lib')
 
-function addressFromKeys(privkey, hash) {
+function addressFromKeys (privkey, hash) {
   const b1 = BigInt('0x' + privkey)
   const b2 = BigInt('0x' + hash)
   const b3 = BigInt.asUintN(256, b1 + b2)
 
-  var keyPair3 = bitcoin.ECPair.fromPrivateKey(
+  const keyPair3 = bitcoin.ECPair.fromPrivateKey(
     Buffer.from(b3.toString(16).padStart(64, 0), 'hex')
   )
 
   // address from priv key addition
-  var { address } = bitcoin.payments.p2pkh({
+  const { address } = bitcoin.payments.p2pkh({
     pubkey: keyPair3.publicKey,
     network: NETWORK
   })
@@ -27,29 +27,26 @@ function addressFromKeys(privkey, hash) {
   return address
 }
 
-function privAddressFromKeys(privkey, hash) {
+function privAddressFromKeys (privkey, hash) {
   const b1 = BigInt('0x' + privkey)
   const b2 = BigInt('0x' + hash)
   const b3 = BigInt.asUintN(256, b1 + b2)
 
-  var keyPair3 = bitcoin.ECPair.fromPrivateKey(
+  const keyPair3 = bitcoin.ECPair.fromPrivateKey(
     Buffer.from(b3.toString(16).padStart(64, 0), 'hex'),
     { network: NETWORK }
   )
-  var privkey = keyPair3.toWIF()
-  
-  return privkey
+  return keyPair3.toWIF()
 }
-
 
 function getPrivKey (file) {
   try {
     const fetchHeadDir = './.git/'
-    var fetchHeadFile = fetchHeadDir + 'FETCH_HEAD'
+    let fetchHeadFile = fetchHeadDir + 'FETCH_HEAD'
 
-    var fetchHead = fs.readFileSync(fetchHeadFile).toString()
+    let fetchHead = fs.readFileSync(fetchHeadFile).toString()
 
-    var repo = fetchHead
+    let repo = fetchHead
       .split(' ')
       .pop()
       .replace(':', '/')
@@ -62,11 +59,11 @@ function getPrivKey (file) {
     return require(gitmarkFile).privkey
   } catch (e) {
     const fetchHeadDir = './.git/'
-    var fetchHeadFile = fetchHeadDir + 'FETCH_HEAD'
+    let fetchHeadFile = fetchHeadDir + 'FETCH_HEAD'
 
-    var fetchHead = fs.readFileSync(fetchHeadFile).toString()
+    let fetchHead = fs.readFileSync(fetchHeadFile).toString()
 
-    var repo = fetchHead
+    let repo = fetchHead
       .split(' ')
       .pop()
       .replace(':', '/')
@@ -81,23 +78,22 @@ function getPrivKey (file) {
   }
 }
 
-
-function getNickFromId(key) {
-  var usernames = require('./usernames.json')
-  var keys = Object.keys(usernames)
-  var ret = keys.find(el => usernames[el] === key) 
+function getNickFromId (key) {
+  const usernames = require('./usernames.json')
+  const keys = Object.keys(usernames)
+  const ret = keys.find(el => usernames[el] === key)
   return ret || key
 }
 
-function computeSHA256(lines) {
-  const hash = createHash('sha256');
+function computeSHA256 (lines) {
+  const hash = createHash('sha256')
   for (let i = 0; i < lines.length; i++) {
-    const line = lines[i].trim(); // remove leading/trailing whitespace
-    if (line === '') continue; // skip empty lines
-    hash.write(line); // write a single line to the buffer
+    const line = lines[i].trim() // remove leading/trailing whitespace
+    if (line === '') continue // skip empty lines
+    hash.write(line) // write a single line to the buffer
   }
 
-  return hash.digest('hex'); // returns hash as string
+  return hash.digest('hex') // returns hash as string
 }
 
 exports.computeSHA256 = computeSHA256
