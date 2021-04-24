@@ -8,17 +8,18 @@ const argv = require('minimist')(process.argv.slice(2))
 const { Telegraf } = require('telegraf')
 
 // commands
-const commands = {}
-commands.help = require('./commands/help.js').help
-commands.marks = require('./commands/marks.js').marks
-commands.balances = require('./commands/balances.js').balances
-commands.wallet = require('./commands/wallet.js').wallet
-commands.givers = require('./commands/givers.js').givers
-commands.balance = require('./commands/balance.js').balance
-commands.mark = require('./commands/mark.js').mark
-commands.deposit = require('./commands/deposit.js').deposit
-commands.sweep = require('./commands/sweep.js').sweep
-commands.withdraw = require('./commands/withdraw.js').withdraw
+const commands = {
+  help: require('./commands/help.js').help,
+  marks: require('./commands/marks.js').marks,
+  balances: require('./commands/balances.js').balances,
+  wallet: require('./commands/wallet.js').wallet,
+  givers: require('./commands/givers.js').givers,
+  balance: require('./commands/balance.js').balance,
+  mark: require('./commands/mark.js').mark,
+  deposit: require('./commands/deposit.js').deposit,
+  sweep: require('./commands/sweep.js').sweep,
+  withdraw: require('./commands/withdraw.js').withdraw
+}
 
 // model
 globalThis.data = {
