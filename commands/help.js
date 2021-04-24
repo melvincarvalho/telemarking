@@ -8,6 +8,7 @@ givers - list top givers
 mark @user amount [comment] - mark user
 marks - get last 20 marks
 sweep - sweep a desposit into the ledger
+wallet - get wallet details
 withdraw <amount> <address> - withdraws amount`)
 }
 
