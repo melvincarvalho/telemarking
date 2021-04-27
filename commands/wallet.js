@@ -1,4 +1,4 @@
-function wallet (ctx, wallet) {
+function wallet(ctx, wallet) {
   ctx.reply(JSON.stringify(wallet, null, 2))
 }
 
