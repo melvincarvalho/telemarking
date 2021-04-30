@@ -21,16 +21,7 @@ const commands = {
   withdraw: require('./commands/withdraw.js').withdraw
 }
 
-// functions
-function getLedger (uri) {
-  try {
-    return require(uri)
-  } catch (e) {
-    console.error(e)
-    return null
-  }
-}
-
+const { getRawLedger } = require('webledgers')
 
 // model
 globalThis.data = {
@@ -49,7 +40,7 @@ const walletFile = argv.wallet
 data.file = argv.file || data.file
 data.txexe = argv.txexe || data.txexe
 
-const ledger = getLedger(ledgerFile)
+const ledger = getRawLedger(ledgerFile)
 const credits = require(creditsFile)
 const wallet = require(walletFile)
 
