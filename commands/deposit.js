@@ -1,10 +1,7 @@
-const getNickFromId = require('../functions.js').getNickFromId
-
-const computeSHA256 = require('../functions.js').computeSHA256
-
-const getPrivKey = require('../functions.js').getPrivKey
-
-const addressFromKeys = require('../functions.js').addressFromKeys
+const { getNickFromId } = require('../functions.js')
+const { computeSHA256 } = require('../functions.js')
+const { getPrivKey } = require('../functions.js')
+const { addressFromKeys } = require('../functions.js')
 
 function deposit (ctx, message, user, file, usernames) {
   console.log('deposit', message)
