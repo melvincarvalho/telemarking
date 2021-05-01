@@ -96,7 +96,19 @@ function computeSHA256 (lines) {
   return hash.digest('hex') // returns hash as string
 }
 
+function sha256 (lines) {
+  const hash = createHash('sha256')
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i].trim() // remove leading/trailing whitespace
+    if (line === '') continue // skip empty lines
+    hash.write(line) // write a single line to the buffer
+  }
+
+  return hash.digest('hex') // returns hash as string
+}
+
 exports.computeSHA256 = computeSHA256
+exports.sha256 = sha256
 exports.getNickFromId = getNickFromId
 exports.getPrivKey = getPrivKey
 exports.addressFromKeys = addressFromKeys
