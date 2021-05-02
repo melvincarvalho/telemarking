@@ -44,7 +44,7 @@ function pubAddressFromKeys (privkey, hash) {
  * @param {string} hash - Hash in hex
  * @returns {string} Private key base58
  */
- function privAddressFromKeys (privkey, hash) {
+function privAddressFromKeys (privkey, hash) {
   const b1 = BigInt('0x' + privkey)
   const b2 = BigInt('0x' + hash)
   const b3 = BigInt.asUintN(256, b1 + b2)

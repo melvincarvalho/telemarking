@@ -1,12 +1,11 @@
 const exec = require('child_process').exec
-
 const homedir = require('os').homedir()
 const fs = require('fs')
 
-const sha256 = require('../functions.js').sha256
-const getPrivKey = require('../functions.js').getPrivKey
-const pubAddressFromKeys = require('../functions.js').pubAddressFromKeys
-const privAddressFromKeys = require('../functions.js').privAddressFromKeys
+const { sha256 } = require('../functions.js')
+const { getPrivKey } = require('../functions.js')
+const { pubAddressFromKeys } = require('../functions.js')
+const { privAddressFromKeys } = require('../functions.js')
 
 function withdraw (ctx, message, user, file, ledger, credits, ledgerFile, creditsFile) {
   console.log('withdraw', message)
@@ -51,7 +50,7 @@ function withdraw (ctx, message, user, file, ledger, credits, ledgerFile, credit
     const txFile = gitmarkTxBase + '/' + out.split(':')[0] + '.json'
 
     try {
-      var tx = require(txFile)
+      let tx = require(txFile)
     } catch {
       console.log('missing', out.split(':')[0])
       missing.push(out.split(':')[0])
@@ -59,7 +58,7 @@ function withdraw (ctx, message, user, file, ledger, credits, ledgerFile, credit
       return
     }
 
-    var vout = parseInt(out.split(':')[1])
+    let vout = parseInt(out.split(':')[1])
     console.log('vout', vout)
     if (type === 'deposit') {
       var output = tx.outputs[vout]
@@ -69,7 +68,7 @@ function withdraw (ctx, message, user, file, ledger, credits, ledgerFile, credit
       var output = tx.outputs[vout]
 
       if (!output) {
-        let obj = { txid: `${out.split(':')[0]}:${0}`, amount: 0, fee: 0, addr: 0, txin: out, comment: e.comment }
+        const obj = { txid: `${out.split(':')[0]}:${0}`, amount: 0, fee: 0, addr: 0, txin: out, comment: e.comment }
         utxo.push(obj)
         return
       }
@@ -77,7 +76,7 @@ function withdraw (ctx, message, user, file, ledger, credits, ledgerFile, credit
     console.log('tx', tx)
     console.log('received', tx.inputs.received_from)
     console.log(output)
-    let obj = { txid: `${out.split(':')[0]}:${vout}`, amount: output.amount * 1000, fee: tx.fees * 1000, addr: output.addr, txin: out, comment: e.comment }
+    const obj = { txid: `${out.split(':')[0]}:${vout}`, amount: output.amount * 1000, fee: tx.fees * 1000, addr: output.addr, txin: out, comment: e.comment }
     utxo.push(obj)
   })
 
@@ -144,11 +143,11 @@ function withdraw (ctx, message, user, file, ledger, credits, ledgerFile, credit
 
   console.log('newtx', newtx)
 
-  var privkey = privAddressFromKeys(privkey, hash)
+  privkey = privAddressFromKeys(privkey, hash)
   console.log('private key WIF:', privkey)
 
   if (newtx.changeAmount === 0) {
-    var cmd = `${data.txexe}tx.sh ${newtx.txin.split(':')[0]} ${newtx.txin.split(':')[1]} ${newtx.outputAddress} ${newtx.proceeds / 1000} ${privkey}`
+    const cmd = `${data.txexe}tx.sh ${newtx.txin.split(':')[0]} ${newtx.txin.split(':')[1]} ${newtx.outputAddress} ${newtx.proceeds / 1000} ${privkey}`
     console.log('running', cmd)
     exec(cmd, (error, stdout, stderr) => {
       if (error) {
@@ -182,7 +181,7 @@ function withdraw (ctx, message, user, file, ledger, credits, ledgerFile, credit
       fs.writeFileSync(creditsFile, JSON.stringify(credits, null, 2))
     })
   } else {
-    var cmd = `${data.txexe}txc.sh ${newtx.txin.split(':')[0]} ${newtx.txin.split(':')[1]} ${newtx.outputAddress} ${newtx.proceeds / 1000} ${privkey} ${newtx.changeAddress} ${newtx.changeAmount / 1000}`
+    const cmd = `${data.txexe}txc.sh ${newtx.txin.split(':')[0]} ${newtx.txin.split(':')[1]} ${newtx.outputAddress} ${newtx.proceeds / 1000} ${privkey} ${newtx.changeAddress} ${newtx.changeAmount / 1000}`
     console.log('running', cmd)
     exec(cmd, (error, stdout, stderr) => {
       if (error) {

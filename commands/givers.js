@@ -1,7 +1,10 @@
-const getNickFromId = require('../functions.js').getNickFromId
+const { getNickFromId } = require('../functions.js')
 
 function getMarks (credits) {
-  return credits.filter(e => e.comment && !e.comment.match(/^withdraw/) && !e.comment.match(/^deposit/))
+  return credits.filter(
+    e =>
+      e.comment && !e.comment.match(/^withdraw/) && !e.comment.match(/^deposit/)
+  )
 }
 
 function givers (ctx, credits) {

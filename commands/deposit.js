@@ -47,6 +47,10 @@ function action (message, user, privkeyfile, usernames) {
   return { user: user, hash: hash, address: address }
 }
 
+funciton pubAddressForUser(user, key) {
+  
+}
+
 /**
  *
  * @param {string} user - The user URI

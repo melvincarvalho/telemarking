@@ -3,13 +3,20 @@ const exec = require('child_process').exec
 const homedir = require('os').homedir()
 const fs = require('fs')
 
-const sha256 = require('../functions.js').sha256
+const { sha256 } = require('../functions.js')
+const { getPrivKey } = require('../functions.js')
+const { pubAddressFromKeys } = require('../functions.js')
 
-const getPrivKey = require('../functions.js').getPrivKey
-
-const pubAddressFromKeys = require('../functions.js').pubAddressFromKeys
-
-function sweep (ctx, message, user, file, ledger, credits, ledgerFile, creditsFile) {
+function sweep (
+  ctx,
+  message,
+  user,
+  file,
+  ledger,
+  credits,
+  ledgerFile,
+  creditsFile
+) {
   // get sweep tx
   const tx = message[1].split(':')
   const vout = tx[1] || 0
@@ -70,7 +77,13 @@ searching ... try again in 15s`)
   ledger[user] += amount
   console.log('newledger', ledger)
   ctx.reply('swept ' + amount + ' to ' + user + ' via ' + message[1])
-  const credit = { source: tx[0] + ':' + tx[1], destination: user, amount: amount, comment: 'deposit', timestamp: Math.floor(Date.now() / 1000) }
+  const credit = {
+    source: tx[0] + ':' + tx[1],
+    destination: user,
+    amount: amount,
+    comment: 'deposit',
+    timestamp: Math.floor(Date.now() / 1000)
+  }
   console.log(credit)
   if (credit) {
     credits.push(credit)
