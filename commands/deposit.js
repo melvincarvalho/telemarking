@@ -1,6 +1,6 @@
 // REQUIRES
 const {
-  addressFromKeys,
+  pubAddressFromKeys,
   sha256,
   getNickFromId,
   getPrivKey
@@ -21,6 +21,7 @@ function deposit (ctx, message, user, privkeyfile, usernames) {
   const str = render(obj.user, obj.hash, obj.address)
   ctx.reply(str)
 }
+
 /**
  *
  * @param {string} message message string
@@ -39,7 +40,7 @@ function action (message, user, privkeyfile, usernames) {
 
   const hash = sha256(user)
   const privkey = getPrivKey(privkeyfile)
-  const address = addressFromKeys(privkey, hash)
+  const address = pubAddressFromKeys(privkey, hash)
 
   console.log('address computed from private', address)
 

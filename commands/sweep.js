@@ -3,11 +3,11 @@ const exec = require('child_process').exec
 const homedir = require('os').homedir()
 const fs = require('fs')
 
-const computeSHA256 = require('../functions.js').computeSHA256
+const sha256 = require('../functions.js').sha256
 
 const getPrivKey = require('../functions.js').getPrivKey
 
-const addressFromKeys = require('../functions.js').addressFromKeys
+const pubAddressFromKeys = require('../functions.js').pubAddressFromKeys
 
 function sweep (ctx, message, user, file, ledger, credits, ledgerFile, creditsFile) {
   // get sweep tx
@@ -19,7 +19,7 @@ function sweep (ctx, message, user, file, ledger, credits, ledgerFile, creditsFi
   }
 
   try {
-    var rawtx = require(homedir + '/.gitmark/tx/' + tx[0] + '.json')
+    let rawtx = require(homedir + '/.gitmark/tx/' + tx[0] + '.json')
   } catch (e) {
     console.log(e)
     ctx.reply(`I dont know about tx: ${tx[0]}
@@ -43,11 +43,11 @@ searching ... try again in 15s`)
   const amount = output.amount * 1000
   const outputaddress = output.addr
 
-  const hash = computeSHA256(user)
+  const hash = sha256(user)
   const privkey = getPrivKey(file)
 
   // priv keys
-  const address = addressFromKeys(privkey, hash)
+  const address = pubAddressFromKeys(privkey, hash)
 
   if (address === outputaddress) {
     console.log('matches')
