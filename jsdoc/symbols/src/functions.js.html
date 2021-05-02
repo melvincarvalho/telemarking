@@ -21,9 +21,9 @@
 <span class='line'> 14</span> 
 <span class='line'> 15</span> </span><span class="COMM">/**
 <span class='line'> 16</span>  * Add two 256 bit unsigned BigInts together
-<span class='line'> 17</span>  * @param {BigInt} a first number to add
-<span class='line'> 18</span>  * @param {BigInt} b second number to add
-<span class='line'> 19</span>  * @returns {BigInt} sum as unsigned BigInt
+<span class='line'> 17</span>  * @param {BigInt} a - First number to add
+<span class='line'> 18</span>  * @param {BigInt} b - Second number to add
+<span class='line'> 19</span>  * @returns {BigInt} Sum as unsigned BigInt
 <span class='line'> 20</span>  */</span><span class="WHIT">
 <span class='line'> 21</span> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="NAME">add</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">a</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">b</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
 <span class='line'> 22</span> </span><span class="WHIT">  </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">BigInt.asUintN</span><span class="PUNC">(</span><span class="NUMB">256</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">a</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">b</span><span class="PUNC">)</span><span class="WHIT">
@@ -31,9 +31,9 @@
 <span class='line'> 24</span> 
 <span class='line'> 25</span> </span><span class="COMM">/**
 <span class='line'> 26</span>  * Gets a base58 public key from a privkey and hash
-<span class='line'> 27</span>  * @param {string} privkey private key in hex
-<span class='line'> 28</span>  * @param {string} hash hash in hex
-<span class='line'> 29</span>  * @returns {string} public key base58
+<span class='line'> 27</span>  * @param {string} privkey - Private key in hex
+<span class='line'> 28</span>  * @param {string} hash - Hash in hex
+<span class='line'> 29</span>  * @returns {string} Public key base58
 <span class='line'> 30</span>  */</span><span class="WHIT">
 <span class='line'> 31</span> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="NAME">pubAddressFromKeys</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">privkey</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">hash</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
 <span class='line'> 32</span> </span><span class="WHIT">  </span><span class="KEYW">const</span><span class="WHIT"> </span><span class="NAME">privkeyInt</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">hex2BigInt</span><span class="PUNC">(</span><span class="NAME">privkey</span><span class="PUNC">)</span><span class="WHIT">
@@ -47,9 +47,9 @@
 <span class='line'> 40</span> 
 <span class='line'> 41</span> </span><span class="COMM">/**
 <span class='line'> 42</span>  * Gets a base58 private key from a privkey and hash
-<span class='line'> 43</span>  * @param {string} privkey private key in hex
-<span class='line'> 44</span>  * @param {string} hash hash in hex
-<span class='line'> 45</span>  * @returns {string} private key base58
+<span class='line'> 43</span>  * @param {string} privkey - Private key in hex
+<span class='line'> 44</span>  * @param {string} hash - Hash in hex
+<span class='line'> 45</span>  * @returns {string} Private key base58
 <span class='line'> 46</span>  */</span><span class="WHIT">
 <span class='line'> 47</span> </span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="NAME">privAddressFromKeys</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">privkey</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">hash</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
 <span class='line'> 48</span> </span><span class="WHIT">  </span><span class="KEYW">const</span><span class="WHIT"> </span><span class="NAME">b1</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">BigInt</span><span class="PUNC">(</span><span class="STRN">'0x'</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">privkey</span><span class="PUNC">)</span><span class="WHIT">
@@ -65,9 +65,9 @@
 <span class='line'> 58</span> 
 <span class='line'> 59</span> </span><span class="COMM">/**
 <span class='line'> 60</span>  * Converts a BigInt to a base58 public key address
-<span class='line'> 61</span>  * @param {BigInt} num the public key
-<span class='line'> 62</span>  * @param {string} network network to use
-<span class='line'> 63</span>  * @returns {string} public key address for that network
+<span class='line'> 61</span>  * @param {BigInt} num - The public key
+<span class='line'> 62</span>  * @param {string} network - Network to use
+<span class='line'> 63</span>  * @returns {string} Public key address for that network
 <span class='line'> 64</span>  */</span><span class="WHIT">
 <span class='line'> 65</span> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="NAME">bigIntToPubKeyAddress</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">num</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">network</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
 <span class='line'> 66</span> </span><span class="WHIT">  </span><span class="KEYW">const</span><span class="WHIT"> </span><span class="NAME">pair</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">bitcoin.ECPair.fromPrivateKey</span><span class="PUNC">(</span><span class="WHIT">
@@ -85,7 +85,7 @@
 <span class='line'> 78</span> 
 <span class='line'> 79</span> </span><span class="COMM">/**
 <span class='line'> 80</span>  * Converts hex to a BigInt
-<span class='line'> 81</span>  * @param {string} hex 64 byte hex
+<span class='line'> 81</span>  * @param {string} hex - 64 byte hex
 <span class='line'> 82</span>  * @returns {BigInt} 256 bit BigInt
 <span class='line'> 83</span>  */</span><span class="WHIT">
 <span class='line'> 84</span> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="NAME">hex2BigInt</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">hex</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
@@ -94,8 +94,8 @@
 <span class='line'> 87</span> 
 <span class='line'> 88</span> </span><span class="COMM">/**
 <span class='line'> 89</span>  * Gets a privkey from a file
-<span class='line'> 90</span>  * @param {string} file containing privkey
-<span class='line'> 91</span>  * @returns {string} privkey
+<span class='line'> 90</span>  * @param {string} file - Containing privkey
+<span class='line'> 91</span>  * @returns {string} Privkey
 <span class='line'> 92</span>  */</span><span class="WHIT">
 <span class='line'> 93</span> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="NAME">getPrivKey</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">file</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
 <span class='line'> 94</span> </span><span class="WHIT">  </span><span class="KEYW">try</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
@@ -138,8 +138,8 @@
 <span class='line'>131</span> 
 <span class='line'>132</span> </span><span class="COMM">/**
 <span class='line'>133</span>  * Tries to get a nick from a key
-<span class='line'>134</span>  * @param {string} key what to lookup
-<span class='line'>135</span>  * @returns {string} nick or original key
+<span class='line'>134</span>  * @param {string} key - What to lookup
+<span class='line'>135</span>  * @returns {string} Nick or original key
 <span class='line'>136</span>  */</span><span class="WHIT">
 <span class='line'>137</span> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="NAME">getNickFromId</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">key</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
 <span class='line'>138</span> </span><span class="WHIT">  </span><span class="KEYW">const</span><span class="WHIT"> </span><span class="NAME">usernames</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">require</span><span class="PUNC">(</span><span class="STRN">'./usernames.json'</span><span class="PUNC">)</span><span class="WHIT">
@@ -150,8 +150,8 @@
 <span class='line'>143</span> 
 <span class='line'>144</span> </span><span class="COMM">/**
 <span class='line'>145</span>  * Gets a sha256 of a string
-<span class='line'>146</span>  * @param {string} input string
-<span class='line'>147</span>  * @returns {string} sha256 of a string
+<span class='line'>146</span>  * @param {string} input - String
+<span class='line'>147</span>  * @returns {string} Sha256 of a string
 <span class='line'>148</span>  */</span><span class="WHIT">
 <span class='line'>149</span> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="NAME">sha256</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">lines</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
 <span class='line'>150</span> </span><span class="WHIT">  </span><span class="KEYW">const</span><span class="WHIT"> </span><span class="NAME">hash</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">createHash</span><span class="PUNC">(</span><span class="STRN">'sha256'</span><span class="PUNC">)</span><span class="WHIT">

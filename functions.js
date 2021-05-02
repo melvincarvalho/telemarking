@@ -14,9 +14,9 @@ const homedir = require('os').homedir()
 
 /**
  * Add two 256 bit unsigned BigInts together
- * @param {BigInt} a first number to add
- * @param {BigInt} b second number to add
- * @returns {BigInt} sum as unsigned BigInt
+ * @param {BigInt} a - First number to add
+ * @param {BigInt} b - Second number to add
+ * @returns {BigInt} Sum as unsigned BigInt
  */
 function add (a, b) {
   return BigInt.asUintN(256, a + b)
@@ -24,9 +24,9 @@ function add (a, b) {
 
 /**
  * Gets a base58 public key from a privkey and hash
- * @param {string} privkey private key in hex
- * @param {string} hash hash in hex
- * @returns {string} public key base58
+ * @param {string} privkey - Private key in hex
+ * @param {string} hash - Hash in hex
+ * @returns {string} Public key base58
  */
 function pubAddressFromKeys (privkey, hash) {
   const privkeyInt = hex2BigInt(privkey)
@@ -40,9 +40,9 @@ function pubAddressFromKeys (privkey, hash) {
 
 /**
  * Gets a base58 private key from a privkey and hash
- * @param {string} privkey private key in hex
- * @param {string} hash hash in hex
- * @returns {string} private key base58
+ * @param {string} privkey - Private key in hex
+ * @param {string} hash - Hash in hex
+ * @returns {string} Private key base58
  */
  function privAddressFromKeys (privkey, hash) {
   const b1 = BigInt('0x' + privkey)
@@ -58,9 +58,9 @@ function pubAddressFromKeys (privkey, hash) {
 
 /**
  * Converts a BigInt to a base58 public key address
- * @param {BigInt} num the public key
- * @param {string} network network to use
- * @returns {string} public key address for that network
+ * @param {BigInt} num - The public key
+ * @param {string} network - Network to use
+ * @returns {string} Public key address for that network
  */
 function bigIntToPubKeyAddress (num, network) {
   const pair = bitcoin.ECPair.fromPrivateKey(
@@ -78,7 +78,7 @@ function bigIntToPubKeyAddress (num, network) {
 
 /**
  * Converts hex to a BigInt
- * @param {string} hex 64 byte hex
+ * @param {string} hex - 64 byte hex
  * @returns {BigInt} 256 bit BigInt
  */
 function hex2BigInt (hex) {
@@ -87,8 +87,8 @@ function hex2BigInt (hex) {
 
 /**
  * Gets a privkey from a file
- * @param {string} file containing privkey
- * @returns {string} privkey
+ * @param {string} file - Containing privkey
+ * @returns {string} Privkey
  */
 function getPrivKey (file) {
   try {
@@ -131,8 +131,8 @@ function getPrivKey (file) {
 
 /**
  * Tries to get a nick from a key
- * @param {string} key what to lookup
- * @returns {string} nick or original key
+ * @param {string} key - What to lookup
+ * @returns {string} Nick or original key
  */
 function getNickFromId (key) {
   const usernames = require('./usernames.json')
@@ -143,8 +143,8 @@ function getNickFromId (key) {
 
 /**
  * Gets a sha256 of a string
- * @param {string} input string
- * @returns {string} sha256 of a string
+ * @param {string} input - String
+ * @returns {string} Sha256 of a string
  */
 function sha256 (lines) {
   const hash = createHash('sha256')

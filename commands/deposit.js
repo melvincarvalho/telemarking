@@ -8,11 +8,11 @@ const {
 
 /**
  *
- * @param {Context} ctx Telegram context
- * @param {string} message message string
- * @param {string} user user URI
- * @param {string} privkeyfile where the private key is
- * @param {array} usernames array of usernames
+ * @param {Object} ctx - Telegram context
+ * @param {Array} message - Tokenized message
+ * @param {string} user - User URI
+ * @param {string} privkeyfile - Private key file
+ * @param {Array} usernames - Array of usernames
  */
 function deposit (ctx, message, user, privkeyfile, usernames) {
   const obj = action(message, user, privkeyfile, usernames)
@@ -24,10 +24,10 @@ function deposit (ctx, message, user, privkeyfile, usernames) {
 
 /**
  *
- * @param {string} message message string
- * @param {*} user user URI
- * @param {*} privkeyfile where the private key is
- * @param {*} usernames array of usernames
+ * @param {Array} message - Tokenized message
+ * @param {string} user - User URI
+ * @param {string} privkeyfile - Private key file
+ * @param {Array} usernames - Array of usernames
  * @returns
  */
 function action (message, user, privkeyfile, usernames) {
@@ -49,10 +49,10 @@ function action (message, user, privkeyfile, usernames) {
 
 /**
  *
- * @param {string} user the user URI
- * @param {string} hash sha256 of user URI
- * @param {string} address address to deposit to
- * @returns string message to display
+ * @param {string} user - The user URI
+ * @param {string} hash - Sha256 of user URI
+ * @param {string} address - Address to deposit to
+ * @returns {string} Message to display
  */
 function render (user, hash, address) {
   return `Deposit Details:
