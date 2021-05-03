@@ -93,7 +93,7 @@ bot.on('text', ctx => {
   // deposit
   if (message[0].toLocaleLowerCase() === 'deposit') {
     console.log('deposit', message)
-    commands.deposit(ctx, message, from, data.file, usernames)
+    commands.deposit(ctx, from, data.file)
   }
 
   // wallet

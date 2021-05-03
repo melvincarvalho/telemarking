@@ -9,50 +9,34 @@ const {
 /**
  *
  * @param {Object} ctx - Telegram context
- * @param {Array} message - Tokenized message
  * @param {string} user - User URI
- * @param {string} privkeyfile - Private key file
- * @param {Array} usernames - Array of usernames
+ * @param {string} privkeyFile - Private key file
  */
-function deposit (ctx, message, user, privkeyfile, usernames) {
-  const obj = action(message, user, privkeyfile, usernames)
+function deposit (ctx, user, privkeyFile) {
+  // action
+  const ret = depositAction(user, privkeyFile)
 
-  // reply
-  const str = render(obj.user, obj.hash, obj.address)
+  // render
+  const str = render(ret.user, ret.hash, ret.address)
   ctx.reply(str)
 }
 
 /**
- *
- * @param {Array} message - Tokenized message
+ * Middleware for deposit
  * @param {string} user - User URI
- * @param {string} privkeyfile - Private key file
- * @param {Array} usernames - Array of usernames
+ * @param {string} privkeyFile - Private key file
  * @returns
  */
-function action (message, user, privkeyfile, usernames) {
-  console.log('deposit', message)
-
-  // get user for desposit
-  if (message[1] && usernames[message[1]]) {
-    user = usernames[message[1]]
-  }
-
+function depositAction (user, privkeyFile) {
   const hash = sha256(user)
-  const privkey = getPrivKey(privkeyfile)
+  const privkey = getPrivKey(privkeyFile)
   const address = pubAddressFromKeys(privkey, hash)
-
-  console.log('address computed from private', address)
 
   return { user: user, hash: hash, address: address }
 }
 
-funciton pubAddressForUser(user, key) {
-  
-}
-
 /**
- *
+ * Render to chat
  * @param {string} user - The user URI
  * @param {string} hash - Sha256 of user URI
  * @param {string} address - Address to deposit to

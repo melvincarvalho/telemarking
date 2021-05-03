@@ -61,9 +61,9 @@ function withdraw (ctx, message, user, file, ledger, credits, ledgerFile, credit
     let vout = parseInt(out.split(':')[1])
     console.log('vout', vout)
     if (type === 'deposit') {
-      var output = tx.outputs[vout]
+      let output = tx.outputs[vout]
     } else {
-      var vout = vout === 0 ? 1 : 0
+      vout = vout === 0 ? 1 : 0
       console.log('withdrawal vout', vout)
       var output = tx.outputs[vout]
 

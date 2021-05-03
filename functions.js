@@ -10,6 +10,7 @@ const NETWORK = require('./networks.js').BITMARK
 const bitcoin = require('bitcoinjs-lib')
 const { createHash } = require('crypto')
 const fs = require('fs')
+
 const homedir = require('os').homedir()
 
 /**
